@@ -1,0 +1,86 @@
+---
+- hosts: dev1 
+
+
+  vars:
+     local_home: "{{ lookup('env','HOME') }}"
+
+
+  tasks:
+  - name: Dump all vars
+    action: template src=templates/dumpall.j2 dest=/var/shared_filesystem/ansible_{{ansible_hostname}}.all
+
+
+  - name: Change Owner
+    file: path=/var/shared_filesystem/ansible_{{ansible_hostname}}.all mode=0777
+
+
+  - name: add group
+    group:
+     name=groupkrh
+
+
+  - name: add user
+    user:
+     name: userkrh
+     groups: groupkrh
+     append: yes
+
+
+  - name: Only run "update_cache=yes" if the last one is more than 3600 seconds ago
+    apt:
+     update_cache: yes
+     cache_valid_time: 3600
+
+
+  - name: Install tree package
+    apt:
+     name: tree
+     state: present
+     update_cache: yes
+    failed_when: no
+
+
+#  - name: Install common packages
+#    apt: 
+#     pkg={{ item }} force=yes install_recommends yes
+#     with_items:
+#        - build-essential
+#        - telnet
+
+
+  - name: Install nginx
+    apt: name=nginx
+     state=latest
+     force=yes
+     update_cache=yes
+    notify:
+     - Start nginx 
+
+  - name: ensure apache is at the latest version
+    apt: name=apache2 state=latest
+
+  - name: copy port.config for apache 
+    copy: src=shared_filesystem/ports.conf dest=/etc/apache2 mode=0644
+    notify:
+     - Restart apache
+
+  - name: be sure apache is started
+    service: name=apache2 state=started 
+
+
+ 
+  handlers:
+  - name: Start nginx
+    service: name=nginx state=started
+
+  - name: Restart nginx
+    service: name=nginx state=restart
+
+  - name: Start apache
+    service: name=apache2 state=started
+
+  - name: Restart apache
+    service: name=apache2 state=restarted
+
+
