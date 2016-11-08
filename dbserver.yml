@@ -1,0 +1,8 @@
+---
+- hosts:  dev1 
+
+  environment: "{{proxy_env}}"
+
+  roles:
+   - role: dbserver
+ 

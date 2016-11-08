@@ -1,0 +1,14 @@
+  - name: Dump all vars
+    action: template src=templates/dumpall.j2 dest=/var/shared_filesystem/ansible_{{ansible_hostname}}.all
+
+  - name: Change Owner
+    file: path=/var/shared_filesystem/ansible_{{ansible_hostname}}.all mode=0777
+
+  - name: Install tree package
+    apt:
+     name: tree
+     state: latest
+     update_cache: yes
+    environment: "{{proxy_env}}"
+    failed_when: no
+

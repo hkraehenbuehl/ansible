@@ -1,0 +1,24 @@
+  - name: Only run "update_cache=yes" if the last one is more than 3600 seconds ago
+    apt:
+     update_cache: yes
+     cache_valid_time: 3600
+
+  - name: Install nginx
+    apt: name=nginx
+     state=latest
+     force=yes
+     update_cache=yes
+    notify:
+     - Start nginx 
+
+  - name: ensure apache is at the latest version
+    apt: name=apache2 state=latest
+
+  - name: copy port.config for apache 
+    copy: src=shared_filesystem/ports.conf dest=/etc/apache2 mode=0644
+    notify:
+     - Restart apache
+
+  - name: be sure apache is started
+    service: name=apache2 state=started 
+

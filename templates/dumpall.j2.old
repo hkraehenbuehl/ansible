@@ -1,3 +1,4 @@
+{{ vars | to_nice_json }}
 {{ environment | to_nice_json }}
 {{ group_names | to_nice_json }}
 {{ groups | to_nice_json }}
