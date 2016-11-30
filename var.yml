@@ -1,0 +1,63 @@
+---
+- hosts:  dev1 
+  remote_user: root
+  become: yes
+
+  vars:
+     local_home: "{{ lookup('env','HOME') }}"
+
+# http_proxy in inventory definiert .... /etc/ansible/host
+#  environment:
+#     http_proxy: http://proxy.infet.ejpd.admin.ch:8080
+#     https_proxy: http://proxy.infet.ejpd.admin.ch:8080
+
+#  tasks:
+#  - name: Dump all vars
+#    action: template src=templates/dumpall.j2 dest=/var/shared_filesystem/ansible_{{ansible_hostname}}.all
+
+  tasks:
+  - name: Display local_home var  
+    debug: msg="Die Variable local_home ist {{local_home}}"
+
+
+# print out all definded facts vars
+#  - name: Display all variables/facts known for a host
+#    debug: var=hostvars[inventory_hostname]
+
+  - name: Display ansible_python_version 
+    debug: var=hostvars[inventory_hostname]['ansible_python_version']
+
+  - name: Display ansible_python type
+    debug: var=hostvars[inventory_hostname]['ansible_python']['type']
+   
+  - name: Display ansible_python major version
+    set_fact:
+      myvars: "{{hostvars[inventory_hostname]['ansible_python']['version']['major']}}"
+
+  - debug: msg="variable ist {{ myvars }}"
+
+  - name: Create Var from facts 
+    set_fact:
+      major_version: "{{hostvars[inventory_hostname]['ansible_python']['version']['major']}}"
+      mircro_version: "{{hostvars[inventory_hostname]['ansible_python']['version']['micro']}}"
+      minor_version: "{{hostvars[inventory_hostname]['ansible_python']['version']['minor']}}"
+
+  - debug: msg="Version ist {{ major_version }}.{{mircro_version}}.{{minor_version}}"
+
+  - name: Create another Var from facts 
+    set_fact:
+      #version: "{{ ansible_python.results | map(attribute='version.micro') | list }}"
+      version: "{{ ansible_python.version.major }}"
+
+  - debug: msg="Version ist {{ version }}"
+
+
+  - name: Replace mit regex_replace ein Teil einer Variablen 
+    set_fact:
+      #testVar: "{{ hostvars[inventory_hostname]['test_var_krh_' + http_proxy ] }}"
+      testVar: "{{ hostvars[inventory_hostname]['test_var_dev1'] | regex_replace('_','___UnderScoreModified___') }}"
+
+  - debug: msg="testVar ist {{ testVar }}"
+
+
+

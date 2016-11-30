@@ -15,7 +15,7 @@ RUN set -x; \
     apt-get update && \
     apt-get install -y ansible && \
     apt-get install -y ssh  && \
-    apt-get install python-apt && \		
+    apt-get install python-apt -y && \		
     apt-get install aptitude -y 
     
 COPY .ssh /root/.ssh

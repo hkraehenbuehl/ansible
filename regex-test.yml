@@ -1,0 +1,10 @@
+- hosts: localhost
+  gather_facts: no
+  vars:
+   var: "{{'eu-events-p06'}}"
+   regex_var: "{{ 'eu-events-p06' | regex_replace('^[a-z].*0(.*)$', '\\1') }}"
+  tasks: 
+     - debug: msg="{{ 'eu-events-p06' | regex_replace('^[a-z].*0(.*)$', '\\1') }}"
+     - debug: msg="{{ regex_var }}"
+     - debug: msg="String ohne durch regex modifiziert ist{{":"}}  {{ var }}"
+
